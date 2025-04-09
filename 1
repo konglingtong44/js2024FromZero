@@ -1,3 +1,30 @@
+#!/bin/bash
+yum update -y
+dnf install -y nginx
+systemctl enable nginx
+systemctl start nginx
+
+# 使用 EOF 方式安全写入多行 HTML
+cat <<EOF > /usr/share/nginx/html/index.html
+<h1>Oddspark Demo Site</h1>
+<p>欢迎访问 Oddspark 示例站点。这是部署在 EC2 上的网页。</p>
+<button onclick='invokeLambda()'>点我调用 Lambda</button>
+<p id='lambdaResult'></p>
+<script>
+  async function invokeLambda() {
+    try {
+      const response = await fetch('<<API_URL>>');
+      const data = await response.text();
+      document.getElementById('lambdaResult').innerText = 'Lambda 返回: ' + data;
+    } catch (error) {
+      document.getElementById('lambdaResult').innerText = '调用失败: ' + error;
+    }
+  }
+</script>
+EOF
+
+
+
 No
 ツール区分
 ツール名
