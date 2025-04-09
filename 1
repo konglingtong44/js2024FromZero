@@ -1,4 +1,66 @@
-#!/bin/bash
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Oddspark-style ALB (Public, Multi-AZ, Listener + TG)
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: "Existing VPC ID"
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet::Id
+    Description: "Public Subnet 1 (e.g. AZ-a)"
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet::Id
+    Description: "Public Subnet 2 (e.g. AZ-c)"
+  AlbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: "ALB Security Group (allow HTTP/HTTPS)"
+
+Resources:
+
+  OddsparkTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: !Ref VpcId
+      Protocol: HTTP
+      Port: 80
+      TargetType: instance
+      HealthCheckEnabled: true
+      HealthCheckPath: /
+      Name: oddspark-tg
+
+  OddsparkALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: oddspark-alb
+      Scheme: internet-facing
+      Type: application
+      Subnets:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+      SecurityGroups:
+        - !Ref AlbSecurityGroup
+      IpAddressType: ipv4
+
+  OddsparkListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref OddsparkALB
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref OddsparkTargetGroup
+
+Outputs:
+  AlbDNS:
+    Description: "ALB DNS Name"
+    Value: !GetAtt OddsparkALB.DNSName
+
+
+
+
+
+bin/bash
 yum update -y
 dnf install -y nginx
 systemctl enable nginx
