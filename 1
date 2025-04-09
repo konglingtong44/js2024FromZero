@@ -1,3 +1,85 @@
+#!/bin/bash
+yum update -y
+dnf install -y nginx
+systemctl enable nginx
+systemctl start nginx
+
+# Write a nice English HTML page with Lambda button
+cat <<EOF > /usr/share/nginx/html/index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Oddspark Demo</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px 40px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      text-align: center;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    #lambdaResult {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #16a085;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to the Oddspark Demo Page</h1>
+    <p>This is a sample site hosted on Amazon EC2.</p>
+    <button onclick="invokeLambda()">Click to invoke Lambda</button>
+    <p id="lambdaResult"></p>
+  </div>
+
+  <script>
+    async function invokeLambda() {
+      try {
+        const response = await fetch('<<API_URL>>');
+        const data = await response.text();
+        document.getElementById('lambdaResult').innerText = 'Lambda returned: ' + data;
+      } catch (error) {
+        document.getElementById('lambdaResult').innerText = 'Invocation failed: ' + error;
+      }
+    }
+  </script>
+</body>
+</html>
+EOF
+
+
+
+
+
 ン
 Amazon GuardDuty
 AWS上の不審な挙動・脅威検出サービス
