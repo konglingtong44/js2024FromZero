@@ -1,4 +1,225 @@
 サービス名
+課金方式
+東京リージョンの参考料金（概算）
+Route 53
+ホストゾーン＋DNSクエリ課金
+ホストゾーン：$0.50/月、DNS：$0.40〜0.60/百万回
+EIP
+非接続時に課金
+$0.005/時間（未接続 or 未転送時）
+ALB
+時間＋リクエスト数
+$0.0252/時間＋LCU：$0.0080/LCU
+NAT Gateway
+時間＋データ転送量
+$0.069/時間＋$0.066/GB
+Fargate Task
+vCPU＋メモリ利用時間
+vCPU：$0.04048/時間、メモリ：$0.004445/GB時間
+EC2
+インスタンスタイプ毎時間課金
+t3.micro：約 $0.0128/時間
+Aurora・DB
+ストレージ＋IO＋インスタンス
+db.t3.medium：約 $0.073/時間＋$0.10/GB/月
+Secrets Manager
+シークレット1件あたりの月額課金
+$0.40/件/月
+Transit Gateway
+接続単位＋転送データ課金
+$0.06/時間＋$0.06/GB
+Site-to-Site VPN
+VPN接続単位課金
+$0.05/時間
+Client VPN
+クライアント接続時間課金
+$0.10/接続時間
+Direct Connect
+帯域幅＋時間
+1Gbps：$0.30/時間〜
+ElastiCache
+ノード単位課金
+cache.t4g.small：約 $0.021/時間
+
+
+
+
+サービス名
+課金方式
+東京リージョンの参考料金（概算）
+API Gateway
+リクエスト数課金
+REST API：$3.50/百万回
+Lambda
+実行回数＋実行時間
+100万回/月 無料、以降 $0.20/百万回＋実行料
+CloudFront
+リクエスト＋転送量課金
+転送：$0.085/GB、リクエスト：$0.0075/万回
+WAF
+ACL＋ルール＋リクエスト課金
+ACL：$5/月、ルール＋$0.60/百万回
+KMS
+暗号/復号回数課金
+$0.03/1万回
+SES / SNS
+通知数・送信数課金
+SNS：$0.50/百万回、SES：送信ごとに課金
+EventBridge
+イベント数課金
+$1.00/百万イベント
+GuardDuty + CloudTrail
+モニタリング＋ログ保存
+GuardDuty：$0.98/GB、CloudTrail：約$2/月
+Kinesis Data Firehose
+転送データ量課金
+$0.029/GB
+
+
+
+サービス名
+課金方式
+東京リージョンの参考料金（概算）
+S3
+保存容量＋リクエスト課金
+$0.025/GB/月、GET：$0.005/千回
+ECR
+ストレージ＋取得回数課金
+$0.10/GB/月、Pull：$0.005/千回
+CloudWatch Logs
+保存＋読み出し課金
+保存：$0.03/GB/月、読み出し：$0.01/GB
+EFS
+ストレージ使用量課金
+標準ストレージ：約 $0.30/GB/月
+AWS Backup
+保存容量＋復元転送課金
+$0.05/GB/月
+Aurora
+ストレージ、IO等（同上）
+上記参照
+Secrets Manager
+呼び出し頻度により変動（補足）
+$0.40/件/月＋API呼び出し課金
+
+
+
+
+
+
+
+服务名
+计费方式
+示例费用（东京区域）
+Route53
+每个托管区域/月 + DNS 查询
+0.50 USD/区域/月，查询：0.40～0.60 USD/百万次
+EIP
+未绑定时收费
+0.005 USD/小时/个（未绑定或绑定但无流量）
+ALB
+每小时 + 请求数
+0.0252 USD/小时 + 0.0080 USD/LCU
+NAT Gateway
+按小时 + 数据处理
+0.069 USD/小时 + 0.066 USD/GB（入/出）
+Fargate Task
+vCPU + 内存按秒计费
+0.04048 USD/vCPU-小时，0.004445 USD/GB-小时
+EC2
+按实例类型、小时数计费
+t3.micro: 约 0.0128 USD/小时（依实例而异）
+Aurora・DB
+按存储+实例类型+IO请求
+db.t3.medium: 约 0.073 USD/小时，存储 0.10 USD/GB/月
+Secrets Manager
+每个 secret 每月
+0.40 USD/secret/月
+Transit Gateway
+按附件数量 + 数据处理量
+附件：0.06 USD/小时，数据：0.06 USD/GB
+Site-to-Site VPN
+每连接每小时
+0.05 USD/小时
+Client VPN
+每客户端连接时间
+0.10 USD/连接小时
+DirectConnect
+按带宽和时间
+1G: 0.30 USD/小时 起，传输费另计
+ElastiCache
+按节点类型和小时
+cache.t4g.small: 约 0.021 USD/小时
+
+
+
+
+服务名
+计费方式
+示例费用（东京区域）
+API Gateway
+REST: 每百万请求计费
+3.50 USD/百万次请求（REST）
+Lambda
+每次调用 + 执行时间
+前 100 万次免费，之后 0.20 USD/百万次 + 资源费用
+CloudFront
+按 GB 传出流量和请求数计费
+0.085 USD/GB（前 10TB/月），请求 0.0075 USD/万次
+WAF
+规则数 + 请求数
+5 USD/ACL/月 + 规则 + 请求 0.60 USD/百万次
+KMS
+每次解密/加密请求计费
+0.03 USD/万次加密/解密
+SES/SNS
+邮件/通知按请求数
+SNS：0.50 USD/百万次，SES：发邮件 + 附件另计
+EventBridge
+每百万事件
+1 USD/百万次
+GuardDuty+CloudTrail
+分析流量 + 日志采集
+GuardDuty：每 GB 0.98 USD，CloudTrail：每月日志约 2 USD
+Kinesis Firehose
+数据处理量（GB）
+0.029 USD/GB
+
+
+
+
+
+服务名
+计费方式
+示例费用（东京区域）
+S3
+存储容量 + 请求数
+0.025 USD/GB/月，GET 请求 0.005 USD/千次
+ECR
+存储空间 + 数据拉取次数
+0.10 USD/GB/月，拉取 0.005 USD/千次
+CloudWatch Logs
+日志存储 + 提取
+存储：0.03 USD/GB/月，读取：0.01 USD/GB
+EFS
+存储用量
+标准存储：0.30 USD/GB/月
+AWS Backup
+储存 + 恢复流量
+0.05 USD/GB/月
+Aurora
+同上（存储、计算、IO）
+同上
+Secrets Manager
+同上（多次调用可能叠加）
+同上
+
+
+
+
+
+
+サービス名
 カテゴリ
 東京リージョンの料金目安
 無料枠
