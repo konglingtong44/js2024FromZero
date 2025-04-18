@@ -1,0 +1,249 @@
+【开发者】
+   |
+   | 推送代码（git push）
+   ↓
+【CodeCommit（Git 仓库）】
+   |
+   | [阶段①：Source]
+   |   - Action：从 CodeCommit 拉取最新代码
+   ↓
+【CodePipeline】
+   |
+   | [阶段②：Build]
+   |   - Action：使用 CodeBuild
+   |     ├── 自动执行 JUnit / 单元测试（例如 ./gradlew test）
+   |     ├── 编译打包产物（例如 ./gradlew build）
+   |     └── 上传成果物至 S3 或 CodeArtifact
+   ↓
+【阶段③：Approve（可选）】
+   - Action：人工审核是否继续发布
+   ↓
+【阶段④：Deploy】
+   - Action：使用 CodeDeploy
+     ├── 将产物部署到目标环境（EC2 / ECS / Lambda）
+     └── 使用 appspec.yml 控制部署流程
+   ↓
+【本番環境】
+   └── 用户通过 Route 53 / ALB / API Gateway 访问服务
+
+（横向辅助模块）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【IAM Role】
+   - 控制 CodeBuild / CodePipeline / CodeDeploy 的权限访问
+
+【Secrets Manager / SSM Parameter Store】
+   - 安全管理数据库密码、API Key 等敏感信息
+   - CodeBuild 通过环境变量注入（如 DB_PASSWORD）
+
+【S3】
+   - 暂存构建产物（如 JAR 包）、部署脚本
+
+【CodeArtifact（可选）】
+   - 存储构建产物 / 管理依赖（如 Maven 仓库）
+
+【CloudWatch Logs】
+   - 记录 CodeBuild / CodeDeploy 日志
+
+【SNS / EventBridge】
+   - 发送 CI/CD 成功或失败通知（可用邮件 / Slack / Lambda）
+
+【CloudTrail】
+   - 审计所有操作（如谁部署了什么）
+
+【Config】
+   - 跟踪配置文件的变更记录
+
+
+阶段
+名称
+说明
+①
+Source
+从 Git 拉取最新代码
+②
+Build
+运行测试 + 编译打包
+③
+Approve
+人工批准部署（可选）
+④
+Deploy
+部署到目标环境
+
+
+
+Git 相关模块补充说明
+	•	CodeCommit：
+	•	相当于 GitHub，在 AWS 上托管代码，支持 HTTPS / SSH 访问
+	•	git clone / push / pull：
+	•	可在 CI/CD 外部或 CodeBuild 环境中使用 git 操作其他仓库（比如 submodule）
+	•	子模块 / 多仓库：
+	•	CodePipeline 也支持从多个仓库触发，或合并多个源码
+
+
+
+
+
+⸻
+
+【AWS 完全 CI/CD アーキテクチャ図（テキスト + Git モジュール付き）】
+【開発者】
+   |
+   | コードを push（git push）
+   ↓
+【CodeCommit（Git リポジトリ）】
+   |
+   | [ステージ①：ソース]
+   |   - アクション：CodeCommit から最新コードを取得
+   ↓
+【CodePipeline】
+   |
+   | [ステージ②：ビルド]
+   |   - アクション：CodeBuild を実行
+   |     ├── JUnit などの単体テストを自動実行（例：./gradlew test）
+   |     ├── コードをビルドして成果物を作成（例：./gradlew build）
+   |     └── 成果物を S3 または CodeArtifact にアップロード
+   ↓
+【ステージ③：承認（オプション）】
+   - アクション：マニュアル承認（リリース前の確認）
+   ↓
+【ステージ④：デプロイ】
+   - アクション：CodeDeploy を実行
+     ├── 成果物を EC2 / ECS / Lambda にデプロイ
+     └── appspec.yml を使ってデプロイ手順を管理
+   ↓
+【本番環境】
+   └── ユーザーが Route 53 / ALB / API Gateway を通じてアクセス
+
+（横断的な補助モジュール）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【IAM ロール】
+   - CodeBuild / CodePipeline / CodeDeploy のアクセス権を管理
+
+【Secrets Manager / SSM パラメータストア】
+   - DB パスワードや API キーなどの機密情報を安全に管理
+   - CodeBuild の環境変数として注入可能（例：DB_PASSWORD）
+
+【S3】
+   - JAR ファイルやデプロイスクリプトなどの一時保存先
+
+【CodeArtifact（オプション）】
+   - 成果物の保存や、依存ライブラリの管理（Maven など）
+
+【CloudWatch Logs】
+   - CodeBuild / CodeDeploy のログ記録・トラブルシュート
+
+【SNS / EventBridge】
+   - 成功・失敗通知をメールや Slack、Lambda などで通知
+
+【CloudTrail】
+   - 誰が・いつ・何をしたかを監査する
+
+【AWS Config】
+   - 設定ファイルの変更履歴をトラッキング
+
+
+ステージ
+名称
+内容
+①
+ソース
+Git（CodeCommit）からコード取得
+②
+ビルド
+単体テスト実行 + 成果物作成
+③
+承認（任意）
+リリース前の手動確認
+④
+デプロイ
+本番環境への配布・展開
+
+
+Git 関連の補足
+	•	CodeCommit：
+	•	GitHub 相当の AWS マネージドリポジトリ
+	•	HTTPS / SSH 両対応
+	•	git 操作：
+	•	CodeBuild 内や開発端末で submodule など複数リポジトリ操作可能
+	•	複数リポジトリ対応：
+	•	CodePipeline では複数ソースリポジトリの統合も可能
+
+サービス名
+用途
+課金方式（東京リージョン）
+無料枠
+CodeCommit
+Git リポジトリ（ソースコード管理）
+無料：最初の5ユーザー分
+5ユーザーまで無料
+CodeBuild
+ビルド＆単体テスト実行エンジン（CI）
+実行時間課金：約 $0.005/分（標準環境）
+100ビルド分/月無料
+CodeDeploy
+成果物を EC2 / ECS / Lambda に自動デプロイ（CD）
+無料（EC2 / Lambda）
+無料
+CodePipeline
+CI/CD の全体フロー管理
+$1/パイプライン/月
+1パイプライン無料/月
+CodeArtifact
+成果物 / 依存ライブラリのパッケージリポジトリ（npm、Mavenなど）
+ストレージ＋API呼出：$0.05/GB + $0.01/千回
+無料枠なし（2024年時点）
+S3
+成果物の保存・デプロイスクリプト管理
+$0.025/GB/月（標準）、+ リクエスト課金
+5GB ストレージ + 一定回数
+IAM
+各サービスへのアクセス制御
+無料
+無料
+Secrets Manager
+DB パスワードや APIキーなどの機密情報管理
+$0.40/シークレット/月 + API 読込課金
+無料枠なし
+CloudWatch Logs
+ビルド・デプロイログの可視化
+保存：$0.03/GB/月、読み出し：$0.01/GB
+一部無料（5GB/月）
+SNS / EventBridge
+CI/CD 成功・失敗などの通知
+通知数による課金（$0.50/100万通知等）
+1ヶ月100万通知無料
+CloudTrail
+操作ログの記録（誰がいつ何をしたか）
+管理イベントは無料（90日）
+無料
+
+
+
+服务名
+用途
+CodeCommit
+AWS 提供的 Git 仓库，相当于 GitHub，供开发者提交源代码
+CodeBuild
+编译、测试代码的平台。你写的 JUnit 测试就是在这里跑的
+CodeDeploy
+自动部署工具。把编译好的代码部署到 EC2、ECS、Lambda
+CodePipeline
+串联所有阶段的“流水线控制台”——从拉代码、构建、测试、部署一步到位
+CodeArtifact
+存放你构建的 .jar / .npm 包等产物，或者私有依赖仓库
+S3
+用于存储构建产物、脚本、配置文件等
+IAM
+给 CodeBuild、CodeDeploy 等服务授权访问其他资源（例如 S3）
+Secrets Manager
+安全保存数据库密码、API 密钥等敏感信息
+CloudWatch Logs
+保存构建、部署过程中产生的日志信息
+SNS / EventBridge
+当构建失败 / 成功时发送通知邮件或触发 Lambda
+CloudTrail
+审计和跟踪所有操作，比如谁发起了部署，什么时候操作了 IAM 权限
+
+
+
