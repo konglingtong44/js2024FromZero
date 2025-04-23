@@ -1,4 +1,28 @@
 AWSTemplateFormatVersion: '2010-09-09'
+
+JMeter：備考（修正版）
+
+推奨TPS：300〜1000未満（構成・シナリオに依存）
+単体PC＋非GUI実行＋JVMチューニングにより、HTTPベースのシンプルなシナリオでは最大1000TPS前後まで対応可能。リソース制限や複雑な処理を含む場合は、300〜500TPS程度が安定稼働の目安。高負荷が必要な場合は**分散実行（Remote Mode）**を推奨。
+
+⸻
+
+Gatling：備考（修正版）
+
+推奨TPS：500〜1500程度（高性能マシン前提）
+Scalaベースの軽量な実行エンジンにより、JMeterよりも高負荷処理に適している。スクリプト形式での管理が可能なため、CI/CDへの組み込みや長期的なテスト運用にも向いている。Recorder機能を除き、基本はCLIベースの操作となる。
+
+⸻
+
+DLTA（Distributed Load Testing on AWS）：備考
+
+推奨TPS：1000〜5000以上（Fargateスケールによる）
+AWSのスケーラブルな構成を活用することで、大規模かつ短時間の高負荷テストに最適。
+費用例（参考）：
+	•	ユーザー数
+
+
+
 Description: Oddspark-style ALB (Public, Multi-AZ, Listener + TG)
 
 Parameters:
