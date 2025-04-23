@@ -1,3 +1,59 @@
+#!/bin/bash
+yum update -y
+curl -sL https://rpm.nodesource.com/setup_18.x | bash -
+yum install -y nodejs git
+
+# 写一个简单的 Node.js 服务器
+mkdir -p /home/ec2-user/demo
+cd /home/ec2-user/demo
+
+cat <<EOF > index.js
+const express = require('express');
+const app = express();
+app.use(express.json());
+
+const visits = {};
+
+app.post('/track', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  visits[ip] = (visits[ip] || 0) + 1;
+  res.json({ ip: ip, visitCount: visits[ip] });
+});
+
+app.listen(80, () => {
+  console.log('Server running on port 80');
+});
+EOF
+
+# 安装依赖并启动
+npm init -y
+npm install express
+
+# 设置为开机自启
+cat <<EOF > /etc/systemd/system/demo.service
+[Unit]
+Description=Demo Visitor Tracker
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /home/ec2-user/demo/index.js
+Restart=always
+User=ec2-user
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reexec
+systemctl daemon-reload
+systemctl enable demo
+systemctl start demo
+
+
+
+
+
 Metasploit
 
 #!/bin/bash
