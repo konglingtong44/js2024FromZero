@@ -1,5 +1,29 @@
 #!/bin/bash
 yum update -y
+amazon-linux-extras install -y nginx1
+systemctl enable nginx
+systemctl start nginx
+# 创建一个简单的网页
+echo "<h1>Oddspark Demo Site</h1>
+<p>Welcome to the Oddspark Demo site. This is a web page hosted on EC2 using Nginx.</p>
+<button onclick='invokeLambda()'>Click me to call Lambda</button>
+<p id='lambdaResult'></p>
+<script>
+  async function invokeLambda() {
+    try {
+      const response = await fetch('<<API_URL>>');
+      const data = await response.text();
+      document.getElementById('lambdaResult').innerText = 'Lambda returned: ' + data;
+    } catch (error) {
+      document.getElementById('lambdaResult').innerText = 'Call failed: ' + error;
+    }
+  }
+</script>" > /usr/share/nginx/html/index.html
+
+
+
+#!/bin/bash
+yum update -y
 curl -sL https://rpm.nodesource.com/setup_18.x | bash -
 yum install -y nodejs git
 
