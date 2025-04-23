@@ -1,5 +1,30 @@
 Metasploit
 
+#!/bin/bash
+yum update -y
+yum install -y python3
+pip3 install flask
+
+cat > /home/ec2-user/app.py << 'EOF'
+from flask import Flask, request
+app = Flask(__name__)
+counter = {"count": 0}
+
+@app.route("/", methods=["POST"])
+def post_data():
+    counter["count"] += 1
+    data = request.get_json()
+    username = data.get("username", "不明")
+    return f"あなたは {counter['count']} 回目のアクセスです\nユーザー名: {username}", 200
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=80)
+EOF
+
+nohup python3 /home/ec2-user/app.py &
+
+
+
 メリット（优点）
 	•	数千の脆弱性エクスプロイト・ペイロードが標準搭載されており、対応範囲が非常に広い
 	•	無料版でも機能が豊富で、教育・検証・CTF用途に最適
