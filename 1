@@ -1,3 +1,30 @@
+import { SSMClient, GetParameterCommand } from "@aws-sdk/client-ssm";
+
+const ssm = new SSMClient({ region: "ap-northeast-1" }); // 改成你的区域
+
+export const handler = async () => {
+  try {
+    const param = await ssm.send(
+      new GetParameterCommand({ Name: "api_base_url" })
+    );
+    const baseUrl = param.Parameter.Value;
+
+    const response = await fetch(`${baseUrl}/mock/userinfo`);
+    const result = await response.json();
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(result),
+    };
+  } catch (err) {
+    console.error("Error:", err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message }),
+    };
+  }
+};
+
 
 const https = require('https');
 const AWS = require('aws-sdk');
