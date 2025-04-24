@@ -1,3 +1,38 @@
+
+import { SFNClient, StartExecutionCommand } from "@aws-sdk/client-sfn";
+
+const sfn = new SFNClient({ region: "ap-northeast-1" });
+
+export const handler = async (event) => {
+  try {
+    const stateMachineArn = "arn:aws:states:ap-northeast-1:123456789012:stateMachine:test-stepfunction"; // 改成你的 ARN
+
+    const input = { source: "from Lambda" };
+
+    const command = new StartExecutionCommand({
+      stateMachineArn,
+      input: JSON.stringify(input)
+    });
+
+    const result = await sfn.send(command);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: "Step Function 已触发",
+        executionArn: result.executionArn
+      })
+    };
+  } catch (e) {
+    console.error("触发失败:", e);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: e.message })
+    };
+  }
+};
+
+
 import { SSMClient, GetParameterCommand } from "@aws-sdk/client-ssm";
 
 const ssm = new SSMClient({ region: "ap-northeast-1" }); // 改成你的区域
